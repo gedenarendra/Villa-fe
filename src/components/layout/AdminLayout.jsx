@@ -69,19 +69,19 @@ const AdminLayout = ({ children }) => {
         {/* Top Header */}
         <header className="h-20 bg-white/80 dark:bg-charcoal/80 backdrop-blur-md border-b border-charcoal/5 dark:border-white/5 px-10 flex items-center justify-between sticky top-0 z-10 transition-colors duration-500">
           <div className="relative w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/20 dark:text-white/20" size={16} />
+            {/* <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/20 dark:text-white/20" size={16} />
             <input 
               type="text" 
               placeholder="Search something..." 
               className="w-full bg-[#F9F9F8] dark:bg-white/5 border-none px-12 py-3 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-bronze/20 text-charcoal dark:text-white placeholder:text-charcoal/20 dark:placeholder:text-white/20 transition-all duration-500"
-            />
+            /> */}
           </div>
           
           <div className="flex items-center gap-6">
-            <button className="relative p-2 text-charcoal/40 hover:text-charcoal dark:text-white/40 dark:hover:text-white transition-colors">
+            {/* <button className="relative p-2 text-charcoal/40 hover:text-charcoal dark:text-white/40 dark:hover:text-white transition-colors">
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-bronze rounded-full border-2 border-white dark:border-charcoal"></span>
-            </button>
+            </button> */}
             <div className="flex items-center gap-4 pl-6 border-l border-charcoal/5 dark:border-white/5">
               <div className="text-right">
                 <p className="text-xs font-bold text-charcoal dark:text-white tracking-wide">Admin User</p>

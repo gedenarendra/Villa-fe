@@ -1,66 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { villaService } from '../../services/villaService';
-import { Calendar as CalendarIcon, Loader2, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { useCalendar } from '../../hooks/useCalendar';
+import { Calendar as CalendarIcon, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 const CalendarManager = () => {
-  const [villas, setVillas] = useState([]);
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState(null);
-
-  // Form state
-  const [selectedVilla, setSelectedVilla] = useState('');
-  const [startYear, setStartYear] = useState(new Date().getFullYear());
-  const [endYear, setEndYear] = useState(new Date().getFullYear());
-  const [note, setNote] = useState('');
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [villaRes, bookingRes] = await Promise.all([
-        villaService.getVillas(),
-        villaService.getBookings()
-      ]);
-      setVillas(villaRes.data || []);
-      setBookings(bookingRes.data || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleBlock = async (e) => {
-    e.preventDefault();
-    if (!selectedVilla || !startYear || !endYear) return;
-
-    try {
-      setSubmitting(true);
-      setMessage(null);
-      await villaService.blockDates({
-        villa_id: selectedVilla,
-        start_year: startYear,
-        end_year: endYear,
-        note: note
-      });
-      setMessage({ type: 'success', text: 'Rentang tahun berhasil diblokir!' });
-      setNote('');
-      fetchData(); // Refresh list
-    } catch (err) {
-      setMessage({ 
-        type: 'error', 
-        text: err.data?.message || 'Gagal memblokir rentang tahun.' 
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const {
+    villas,
+    bookings,
+    loading,
+    submitting,
+    message,
+    selectedVilla,
+    setSelectedVilla,
+    startYear,
+    setStartYear,
+    endYear,
+    setEndYear,
+    note,
+    setNote,
+    handleBlock
+  } = useCalendar();
 
   if (loading) return (
     <div className="flex items-center justify-center h-[500px]">

@@ -11,9 +11,13 @@ import {
   MapPin,
   Trash2
 } from 'lucide-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const Catalog = () => {
-  const { villas, loading, error, refresh } = useVillas();
+  const { villas, loading, error, refresh, deleteVilla } = useVillas();
   const {
     isModalOpen,
     isSubmitting,
@@ -21,8 +25,73 @@ const Catalog = () => {
     openModal,
     closeModal,
     handleChange,
-    handleSubmit
+    handleSubmit: originalSubmit
   } = useVillaForm(refresh);
+
+  const handleSubmit = async (e) => {
+    const result = await originalSubmit(e);
+    if (result && result.success) {
+      MySwal.fire({
+        title: 'Success!',
+        text: 'New villa has been added to catalog.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+        background: '#fff'
+      });
+    } else if (result && !result.success) {
+      MySwal.fire({
+        title: 'Error!',
+        text: result.error?.response?.data?.message || 'Failed to save property.',
+        icon: 'error',
+        confirmButtonColor: '#C5A358'
+      });
+    }
+  };
+
+  const handleDelete = async (id, name) => {
+    const result = await MySwal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete "${name}". This action cannot be undone!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#C5A358', // Bronze color
+      cancelButtonColor: '#111', // Charcoal color
+      confirmButtonText: 'Yes, delete it!',
+      background: '#fff',
+      customClass: {
+        popup: 'rounded-[2rem] border-none font-sans',
+        title: 'text-charcoal font-black uppercase tracking-tight',
+        confirmButton: 'rounded-xl px-6 py-3 text-[10px] font-bold uppercase tracking-widest',
+        cancelButton: 'rounded-xl px-6 py-3 text-[10px] font-bold uppercase tracking-widest'
+      }
+    });
+
+    if (result.isConfirmed) {
+      const response = await deleteVilla(id);
+      if (response.success) {
+        MySwal.fire({
+          title: 'Deleted!',
+          text: 'The villa has been removed from catalog.',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#fff',
+          customClass: {
+            popup: 'rounded-[2rem] border-none font-sans',
+            title: 'text-charcoal font-black uppercase tracking-tight'
+          }
+        });
+      } else {
+        MySwal.fire({
+          title: 'Error!',
+          text: 'Something went wrong while deleting.',
+          icon: 'error',
+          confirmButtonColor: '#C5A358'
+        });
+      }
+    }
+  };
 
 
   if (error) {
@@ -261,11 +330,7 @@ const Catalog = () => {
                       </td>
                       <td className="px-10 py-8 text-right flex justify-end gap-2">
                         <button 
-                          onClick={() => {
-                            if(window.confirm('Are you sure you want to delete this villa?')) {
-                              villaService.deleteVilla(villa.id).then(() => refresh());
-                            }
-                          }}
+                          onClick={() => handleDelete(villa.id, villa.name)}
                           className="p-3 rounded-xl text-red-400/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                         >
                           <Trash2 size={18} />

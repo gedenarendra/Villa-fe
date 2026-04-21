@@ -3,6 +3,7 @@ import { publicApi, api } from './api';
 /**
  * Villa Service (Data Layer)
  * Handles all communication with the backend regarding Villa entities.
+ * CONSISTENCY: All methods return the unwrapped 'data' field from the API response.
  */
 
 export const villaService = {
@@ -10,8 +11,7 @@ export const villaService = {
     getVillas: async () => {
         try {
             const response = await publicApi.get(`/villas?t=${new Date().getTime()}`);
-            // Ekstrak properti 'data' dari respons Laravel
-            return response.data; 
+            return response.data; // Array of villas
         } catch (error) {
             console.error('Failed to fetch villas:', error);
             throw error;
@@ -22,7 +22,7 @@ export const villaService = {
     getVillaById: async (id) => {
         try {
             const response = await publicApi.get(`/villas/${id}`);
-            return response.data;
+            return response.data; // Villa object
         } catch (error) {
             console.error(`Failed to fetch villa ${id}:`, error);
             throw error;
@@ -33,7 +33,7 @@ export const villaService = {
     createVilla: async (villaData) => {
         try {
             const response = await api.post('/villas', villaData);
-            return response.data;
+            return response.data; // Created villa object
         } catch (error) {
             console.error('Failed to create villa:', error);
             throw error;
@@ -44,7 +44,7 @@ export const villaService = {
     updateVilla: async (id, villaData) => {
         try {
             const response = await api.put(`/villas/${id}`, villaData);
-            return response.data;
+            return response.data; // Updated villa object
         } catch (error) {
             console.error(`Failed to update villa ${id}:`, error);
             throw error;
@@ -54,7 +54,8 @@ export const villaService = {
     // Admin: Delete villa
     deleteVilla: async (id) => {
         try {
-            return await api.delete(`/villas/${id}`);
+            const response = await api.delete(`/villas/${id}`);
+            return response.data; // Success message
         } catch (error) {
             console.error(`Failed to delete villa ${id}:`, error);
             throw error;
@@ -64,7 +65,8 @@ export const villaService = {
     // Get availability for a villa
     getAvailability: async (id) => {
         try {
-            return await publicApi.get(`/villas/${id}/availability`);
+            const response = await publicApi.get(`/villas/${id}/availability`);
+            return response.data; // Array of bookings
         } catch (error) {
             console.error(`Failed to fetch availability for villa ${id}:`, error);
             throw error;
@@ -74,7 +76,8 @@ export const villaService = {
     // Admin: Block dates
     blockDates: async (blockData) => {
         try {
-            return await api.post('/bookings/block', blockData);
+            const response = await api.post('/bookings/block', blockData);
+            return response.data; // Created booking object
         } catch (error) {
             console.error('Failed to block dates:', error);
             throw error;
@@ -84,7 +87,8 @@ export const villaService = {
     // Admin: Get all bookings
     getBookings: async () => {
         try {
-            return await api.get('/bookings');
+            const response = await api.get('/bookings');
+            return response.data; // Array of bookings
         } catch (error) {
             console.error('Failed to fetch bookings:', error);
             throw error;

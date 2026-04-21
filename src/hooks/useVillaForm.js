@@ -49,7 +49,7 @@ export const useVillaForm = (onSuccess) => {
         
         try {
             setIsSubmitting(true);
-            await villaService.createVilla({
+            const response = await villaService.createVilla({
                 ...formData,
                 price_per_year: parseFloat(formData.price_per_year),
                 max_guests: parseInt(formData.max_guests)
@@ -57,9 +57,10 @@ export const useVillaForm = (onSuccess) => {
             
             closeModal();
             if (onSuccess) onSuccess();
+            return { success: true, data: response };
         } catch (err) {
             console.error('Form Submission Error:', err);
-            alert('Failed to save villa. Please check your data.');
+            return { success: false, error: err };
         } finally {
             setIsSubmitting(false);
         }

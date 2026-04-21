@@ -18,14 +18,26 @@ export const dashboardService = {
   },
 
   /**
-   * Calculates total revenue from rented villas
+   * Calculates total revenue from bookings
+   * Formula: Villa Price * Duration (Years)
    */
-  calculateTotalRevenue: (rentedVillas) => {
-    return rentedVillas.reduce((acc, villa) => {
+  calculateTotalRevenue: (bookings) => {
+    if (!Array.isArray(bookings)) return 0;
+    
+    return bookings.reduce((acc, booking) => {
+      const villa = booking.villa;
+      if (!villa) return acc;
+
       const price = typeof villa.price_per_year === 'number' 
         ? villa.price_per_year 
         : parseFloat(villa.price_per_year || 0);
-      return acc + price;
+
+      // Calculate duration in years
+      const startYear = new Date(booking.start_date).getFullYear();
+      const endYear = new Date(booking.end_date).getFullYear();
+      const duration = (endYear - startYear) + 1;
+
+      return acc + (price * duration);
     }, 0);
   },
 

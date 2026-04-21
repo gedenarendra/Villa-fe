@@ -1,55 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { villaService } from '../services/villaService';
+import { useVillaDetail } from '../hooks/useVillaDetail';
 import MainLayout from '../layouts/MainLayout';
 import AvailabilityCalendar from '../components/common/AvailabilityCalendar';
 import { Loader2, Users, MapPin, Calendar as CalendarIcon, MessageCircle, ArrowLeft } from 'lucide-react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const VillaDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [villa, setVilla] = useState(null);
-  const [availability, setAvailability] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
+  const {
+    villa,
+    availability,
+    loading,
+    error,
+    validationError,
+    setValidationError,
+    startYear,
+    endYear,
+    setStartYear,
+    setEndYear,
+    handleWhatsAppBooking
+  } = useVillaDetail(id);
 
-  // Booking selection state
-  const [startYear, setStartYear] = useState(new Date().getFullYear());
-  const [endYear, setEndYear] = useState(new Date().getFullYear());
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [villaData, availData] = await Promise.all([
-          villaService.getVillaById(id),
-          villaService.getAvailability(id)
-        ]);
-        
-        if (villaData.success) setVilla(villaData.data);
-        if (availData.success) setAvailability(availData.data);
-      } catch (err) {
-        setError("Failed to load villa details");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [id]);
-
-  const handleWhatsAppBooking = () => {
-    if (endYear < startYear) {
-      alert("Tahun selesai tidak boleh lebih kecil dari tahun mulai!");
-      return;
+  React.useEffect(() => {
+    if (validationError) {
+      MySwal.fire({
+        title: 'Invalid Selection',
+        text: validationError,
+        icon: 'error',
+        confirmButtonColor: '#C5A358'
+      }).then(() => setValidationError(null));
     }
-
-    const duration = endYear - startYear + 1;
-    const message = `Halo Nara Villa, saya tertarik untuk menyewa ${villa.name} dari tahun ${startYear} sampai ${endYear} (Durasi: ${duration} Tahun). Apakah unit ini masih tersedia untuk periode tersebut?`;
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/6281234567890?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-  };
+  }, [validationError, setValidationError]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-cream dark:bg-charcoal">
@@ -128,7 +115,7 @@ const VillaDetail = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-12 py-12 border-t border-cream dark:border-white/5">
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-medium">Yearly Rate</span>
-                  <span className="text-xl font-bold text-charcoal dark:text-white">Rp {villa.price_per_year?.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-charcoal dark:text-white">Rp {villa.price_per_year?.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-medium">Capacity</span>
@@ -136,8 +123,12 @@ const VillaDetail = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-medium">Current Status</span>
-                  <span className={`text-xl font-bold uppercase ${villa.status === 'available' ? 'text-green-500' : 'text-red-500'}`}>
-                    {villa.status}
+                  <span className={`text-xl font-bold uppercase ${
+                      villa.status === 'available' ? 'text-green-500' : 
+                      villa.status === 'partially_booked' ? 'text-amber-500' : 
+                      'text-red-500'
+                    }`}>
+                    {villa.status === 'fullbooked' ? 'Fully Booked' : villa.status.replace('_', ' ')}
                   </span>
                 </div>
               </div>

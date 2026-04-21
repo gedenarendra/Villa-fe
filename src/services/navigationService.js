@@ -26,26 +26,26 @@ export const ADMIN_NAV_ITEMS = [
     path: '/admin/catalog',
     icon: Home
   },
-  {
-    id: 'users',
-    label: 'Users',
-    path: '/admin/users',
-    icon: Users,
-    disabled: true
-  },
+  // {
+  //   id: 'users',
+  //   label: 'Users',
+  //   path: '/admin/users',
+  //   icon: Users,
+  //   disabled: true
+  // },
   {
     id: 'calendar',
     label: 'Calendar',
     path: '/admin/calendar',
     icon: Calendar
   },
-  {
-    id: 'inquiries',
-    label: 'Inquiries',
-    path: '/admin/inquiries',
-    icon: MessageSquare,
-    disabled: true
-  },
+  // {
+  //   id: 'inquiries',
+  //   label: 'Inquiries',
+  //   path: '/admin/inquiries',
+  //   icon: MessageSquare,
+  //   disabled: true
+  // },
   {
     id: 'settings',
     label: 'Settings',

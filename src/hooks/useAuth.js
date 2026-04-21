@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { publicApi } from '../services/api';
+import { authService } from '../services/authService';
 
 /**
  * Custom Hook: useAuth
@@ -26,8 +26,8 @@ export const useAuth = () => {
         setLoading(true);
         
         try {
-            // Real API Call
-            const data = await publicApi.post('/login', { email, password });
+            // Real API Call via Service
+            const data = await authService.login(email, password);
             localStorage.setItem('token', data.token);
             navigate('/admin/dashboard');
             return true;

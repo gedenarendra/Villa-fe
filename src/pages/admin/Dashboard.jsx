@@ -1,10 +1,8 @@
-import { useVillas } from '../../hooks/useVillas';
+import { useDashboard } from '../../hooks/useDashboard.jsx';
 import { 
   TrendingUp,
   TrendingDown,
-  DollarSign,
-  Home as HomeIcon,
-  Users,
+Home as HomeIcon,
   Loader2
 } from 'lucide-react';
 import { 
@@ -15,34 +13,11 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer 
-} from 'recharts';
-import { dashboardService } from '../../services/dashboardService';
+} 
+from 'recharts';
 
 const Dashboard = () => {
-  const { villas, loading, error } = useVillas();
-
-  // Use dashboardService for data logic
-  const rentedVillas = dashboardService.getRentedVillas(villas);
-  const totalRevenue = dashboardService.calculateTotalRevenue(rentedVillas);
-  const chartData = dashboardService.getChartData(totalRevenue);
-  
-  const rawStats = dashboardService.getDashboardStats(totalRevenue, rentedVillas.length, villas.length);
-
-  // Map raw stats to include UI specific properties (icons, colors)
-  const stats = rawStats.map(stat => {
-    switch(stat.type) {
-      case 'revenue':
-        return { ...stat, icon: <DollarSign size={20} className="text-bronze" />, color: 'bg-bronze/10' };
-      case 'total':
-        return { ...stat, icon: <HomeIcon size={20} className="text-purple-500" />, color: 'bg-purple-500/10' };
-      case 'rented':
-        return { ...stat, icon: <Users size={20} className="text-blue-500" />, color: 'bg-blue-500/10' };
-      case 'conversion':
-        return { ...stat, icon: <TrendingUp size={20} className="text-green-500" />, color: 'bg-green-500/10' };
-      default:
-        return stat;
-    }
-  });
+  const { villas, stats, chartData, loading, error } = useDashboard();
 
 
   if (error) {
@@ -153,9 +128,21 @@ const Dashboard = () => {
         <div className="bg-white dark:bg-charcoal p-10 rounded-[2.5rem] border border-charcoal/5 dark:border-white/5 shadow-sm">
           <h3 className="text-xs font-black text-charcoal dark:text-white uppercase tracking-[0.2em] mb-8">Latest Properties</h3>
           <div className="space-y-8">
-            {villas.slice(0, 3).map((villa, idx) => {
-              const statusStr = villa.current_availability?.toLowerCase() || villa.status?.toLowerCase();
-              const isAvailable = statusStr === 'available';
+            {villas.slice().reverse().slice(0, 3).map((villa, idx) => {
+              const statusStr = villa.status?.toLowerCase();
+              
+              // Mapping warna & label berdasarkan Enum Backend
+              let statusLabel = 'Available';
+              let statusColor = 'bg-green-500/10 text-green-500';
+
+              if (statusStr === 'fullbooked') {
+                statusLabel = 'Full Booked';
+                statusColor = 'bg-red-500/10 text-red-500';
+              } else if (statusStr === 'partially_booked') {
+                statusLabel = 'Partially Booked';
+                statusColor = 'bg-yellow-500/10 text-yellow-600';
+              }
+
               return (
                 <div key={idx} className="flex items-center justify-between group cursor-pointer">
                   <div className="flex items-center gap-5">
@@ -169,10 +156,8 @@ const Dashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-base font-black text-charcoal dark:text-white">Rp {villa.price_per_year?.toLocaleString() || '0'}</p>
-                    <p className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md inline-block ${
-                      isAvailable ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
-                    }`}>
-                      {statusStr === 'fully booked' ? 'Fully Booked' : statusStr === 'limited' ? 'Limited' : 'Available'}
+                    <p className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md inline-block ${statusColor}`}>
+                      {statusLabel}
                     </p>
                   </div>
                 </div>
