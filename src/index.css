@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('https://cdn.fontshare.com/wf/TTN6THBCYDXS6YTPYF62N67H64N7YF4E/EAXS6YTPYF62N67H64N7YF4E/6O6N7H64N7YF4E.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('https://cdn.fontshare.com/wf/LAXS6YTPYF62N67H64N7YF4E/6O6N7H64N7YF4E/6O6N7H64N7YF4E.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('https://cdn.fontshare.com/wf/6O6N7H64N7YF4E/6O6N7H64N7YF4E/6O6N7H64N7YF4E.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  body {
+    @apply bg-cream text-charcoal font-satoshi antialiased;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-[1440px] mx-auto px-6 lg:px-12;
+  }
+  
+  .text-hero {
+    @apply font-bold text-[3.5rem] md:text-[5rem] lg:text-[6rem] leading-tight-extra tracking-tighter-plus uppercase;
+  }
+  
+  .text-subheading {
+    @apply font-bold text-3xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tighter-plus uppercase;
+  }
+  
+  .link-underlined {
+    @apply inline-flex items-center gap-3 text-xs font-bold tracking-widest-plus uppercase border-b border-charcoal/10 pb-1 hover:border-charcoal transition-all duration-300;
+  }
+}
