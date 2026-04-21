@@ -9,8 +9,9 @@ export const villaService = {
     // Get all villas for the public catalog
     getVillas: async () => {
         try {
-            // bypass browser cache by appending timestamp
-            return await publicApi.get(`/villas?t=${new Date().getTime()}`);
+            const response = await publicApi.get(`/villas?t=${new Date().getTime()}`);
+            // Ekstrak properti 'data' dari respons Laravel
+            return response.data; 
         } catch (error) {
             console.error('Failed to fetch villas:', error);
             throw error;
@@ -20,7 +21,8 @@ export const villaService = {
     // Get a single villa detail
     getVillaById: async (id) => {
         try {
-            return await publicApi.get(`/villas/${id}`);
+            const response = await publicApi.get(`/villas/${id}`);
+            return response.data;
         } catch (error) {
             console.error(`Failed to fetch villa ${id}:`, error);
             throw error;
@@ -30,7 +32,8 @@ export const villaService = {
     // Admin: Create new villa
     createVilla: async (villaData) => {
         try {
-            return await api.post('/villas', villaData);
+            const response = await api.post('/villas', villaData);
+            return response.data;
         } catch (error) {
             console.error('Failed to create villa:', error);
             throw error;
@@ -40,7 +43,8 @@ export const villaService = {
     // Admin: Update villa
     updateVilla: async (id, villaData) => {
         try {
-            return await api.put(`/villas/${id}`, villaData);
+            const response = await api.put(`/villas/${id}`, villaData);
+            return response.data;
         } catch (error) {
             console.error(`Failed to update villa ${id}:`, error);
             throw error;

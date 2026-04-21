@@ -37,6 +37,7 @@ const Catalog = () => {
           properties && properties.length > 0 ? properties.map((item) => (
             <Link to={`/villas/${item.id}`} key={item?.id || Math.random()} className="group cursor-pointer block">
               <div className="aspect-[3/4] overflow-hidden mb-6 relative">
+                {/* Logika gambar Anda sudah sangat bagus dan sesuai dengan format backend baru! */}
                 <img 
                   src={item?.images?.find(img => img.is_primary)?.image_url || item?.images?.[0]?.image_url || '/nara_villa_hero.png'} 
                   alt={item?.name || 'Villa'} 
@@ -49,31 +50,37 @@ const Catalog = () => {
                   <div className="bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-charcoal dark:text-white transition-colors duration-500">
                     Rp {typeof item?.price_per_year === 'number' ? item.price_per_year.toLocaleString() : (item?.price_per_year || '4.5M')} / Year
                   </div>
+                  
+                  {/* PENYESUAIAN: Menggunakan item.status dengan enum dari Laravel */}
                   <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] backdrop-blur-md flex items-center gap-2 transition-colors duration-500 ${
-                    item?.current_availability === 'available' 
+                    item?.status === 'available' 
                       ? 'bg-green-500/80 text-white' 
-                      : item?.current_availability === 'limited'
+                      : item?.status === 'partially_booked'
                         ? 'bg-amber-400/90 text-charcoal'
-                        : 'bg-red-500/80 text-white'
+                        : 'bg-red-500/80 text-white' // Untuk fullbooked
                   }`}>
                     <span>
-                      {item?.current_availability === 'fully booked' ? 'Fully Booked' : 
-                       item?.current_availability === 'limited' ? 'Limited Availability' : 
-                       'Available'}
+                      {item?.status === 'fullbooked' ? 'Fully Booked' : 
+                      item?.status === 'partially_booked' ? 'Partially Booked' : 
+                      'Available'}
                     </span>
-                    {item?.current_availability !== 'available' && item?.next_available_year && (
-                      <span className={`${item?.current_availability === 'limited' ? 'bg-charcoal/10' : 'bg-white/20'} px-1.5 py-0.5 rounded-sm`}>
+                    
+                    {/* Catatan: item.next_available_year sepertinya tidak ada di kolom tabel villas saat ini. 
+                        Bisa dibiarkan jika akan ditambahkan nanti, atau disembunyikan. */}
+                    {item?.status !== 'available' && item?.next_available_year && (
+                      <span className={`${item?.status === 'partially_booked' ? 'bg-charcoal/10' : 'bg-white/20'} px-1.5 py-0.5 rounded-sm`}>
                         NEXT: {item.next_available_year}
                       </span>
                     )}
                   </div>
                 </div>
               </div>
+              
               <h4 className="font-bold text-lg uppercase tracking-tight mb-2 text-charcoal dark:text-white group-hover:text-bronze dark:group-hover:text-bronze transition-colors duration-500">
                 {item?.name || 'Unnamed Villa'}
               </h4>
               <p className="text-gray-medium dark:text-white/60 text-[10px] font-bold uppercase tracking-[0.15em] transition-colors duration-500">
-                {item?.category || 'Luxury Rental'} • {item?.location || 'Uluwatu'}
+                {item?.category || 'Luxury Rental'} • {item?.location || 'Bali'}
               </p>
             </Link>
           )) : (

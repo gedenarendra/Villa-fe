@@ -14,7 +14,7 @@ export const useVillaForm = (onSuccess) => {
         description: '',
         price_per_year: '',
         max_guests: '',
-        status: 'available',
+        status: 'available', // Pilihan yang valid: 'available', 'fullbooked', 'partially_booked'
         image_url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=1000'
     });
 
