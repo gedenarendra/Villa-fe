@@ -94,5 +94,16 @@ export const villaService = {
             console.error('Failed to fetch bookings:', error);
             throw error;
         }
+    },
+    
+    // Admin: Hard Reset Data
+    hardReset: async () => {
+        try {
+            const response = await api.post('/system/hard-reset');
+            return response.data;
+        } catch (error) {
+            console.error('Failed to perform hard reset:', error);
+            throw error;
+        }
     }
 };

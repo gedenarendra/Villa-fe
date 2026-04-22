@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Catalog = lazy(() => import('./pages/admin/Catalog'));
 const VillaDetail = lazy(() => import('./pages/VillaDetail'));
 const CalendarManager = lazy(() => import('./pages/admin/CalendarManager'));
+const Settings = lazy(() => import('./pages/admin/Settings'));
 import AdminLayout from './components/layout/AdminLayout';
 
 // Loading fallback component
@@ -69,6 +70,7 @@ const AnimatedRoutes = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="catalog" element={<Catalog />} />
           <Route path="calendar" element={<CalendarManager />} />
+          <Route path="settings" element={<Settings />} />
           {/* Redirect /admin to /admin/dashboard */}
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
