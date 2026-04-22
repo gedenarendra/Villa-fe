@@ -59,11 +59,11 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
           <div>
             <h3 className="text-xl font-black text-charcoal dark:text-white tracking-tight">Financial Growth</h3>
-            <p className="text-xs text-charcoal/40 dark:text-white/40 font-medium">Monthly revenue trends from active rentals</p>
+            <p className="text-xs text-charcoal/40 dark:text-white/40 font-medium">Yearly revenue trends from active rentals</p>
           </div>
           <div className="flex gap-2">
-            <button className="px-5 py-2.5 bg-bronze text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-bronze/20">Monthly</button>
-            <button className="px-5 py-2.5 bg-[#F9F9F8] dark:bg-white/5 text-charcoal/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-charcoal dark:hover:text-white transition-colors">Yearly</button>
+            <button className="px-5 py-2.5 bg-[#F9F9F8] dark:bg-white/5 text-charcoal/40 dark:text-white/40 text-[10px] font-black uppercase tracking-widest rounded-xl hover:text-charcoal dark:hover:text-white transition-colors">Monthly</button>
+            <button className="px-5 py-2.5 bg-bronze text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-bronze/20">Yearly</button>
           </div>
         </div>
 
@@ -93,7 +93,11 @@ const Dashboard = () => {
                   axisLine={false} 
                   tickLine={false} 
                   tick={{fontSize: 11, fontWeight: 800, fill: '#888'}}
-                  tickFormatter={(value) => `Rp ${value / 1000}k`}
+                  tickFormatter={(value) => {
+                    if (value >= 1000000000) return `Rp ${(value / 1000000000).toFixed(1)}M`;
+                    if (value >= 1000000) return `Rp ${(value / 1000000).toFixed(0)}jt`;
+                    return `Rp ${value / 1000}k`;
+                  }}
                   dx={-10}
                 />
                 <Tooltip 
@@ -106,6 +110,7 @@ const Dashboard = () => {
                   }}
                   itemStyle={{ color: '#C5A358', fontSize: '12px', fontWeight: 900 }}
                   labelStyle={{ color: '#fff', fontSize: '10px', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '1px' }}
+                  formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Revenue']}
                   cursor={{ stroke: '#C5A358', strokeWidth: 1, strokeDasharray: '5 5' }}
                 />
                 <Area 

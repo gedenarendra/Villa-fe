@@ -47,12 +47,11 @@ export const dashboardService = {
    */
   getChartData: (totalRevenue) => {
     return [
-      { name: 'Jan', revenue: Math.floor(totalRevenue * 0.45) },
-      { name: 'Feb', revenue: Math.floor(totalRevenue * 0.62) },
-      { name: 'Mar', revenue: Math.floor(totalRevenue * 0.58) },
-      { name: 'Apr', revenue: Math.floor(totalRevenue * 0.85) },
-      { name: 'May', revenue: Math.floor(totalRevenue * 0.73) },
-      { name: 'Jun', revenue: totalRevenue },
+      { name: '2021', revenue: Math.floor(totalRevenue * 0.35) },
+      { name: '2022', revenue: Math.floor(totalRevenue * 0.52) },
+      { name: '2023', revenue: Math.floor(totalRevenue * 0.68) },
+      { name: '2024', revenue: Math.floor(totalRevenue * 0.85) },
+      { name: '2025', revenue: totalRevenue },
     ];
   },
 
