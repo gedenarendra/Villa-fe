@@ -67,7 +67,7 @@ export const dashboardService = {
     return [
       {
         label: 'Total Revenue',
-        value: `Rp ${totalRevenue.toLocaleString()}`,
+        value: `Rp ${totalRevenue.toLocaleString('id-ID')}`,
         trend: 'Yearly',
         isUp: true,
         type: 'revenue'

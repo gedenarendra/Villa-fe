@@ -155,7 +155,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-base font-black text-charcoal dark:text-white">Rp {villa.price_per_year?.toLocaleString() || '0'}</p>
+                    <p className="text-base font-black text-charcoal dark:text-white">Rp {villa.price_per_year ? Number(villa.price_per_year).toLocaleString('id-ID') : '0'}</p>
                     <p className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md inline-block ${statusColor}`}>
                       {statusLabel}
                     </p>

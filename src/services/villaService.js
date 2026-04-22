@@ -43,7 +43,8 @@ export const villaService = {
     // Admin: Update villa
     updateVilla: async (id, villaData) => {
         try {
-            const response = await api.put(`/villas/${id}`, villaData);
+            // UBAH DARI api.put MENJADI api.patch
+            const response = await api.patch(`/villas/${id}`, villaData);
             return response.data; // Updated villa object
         } catch (error) {
             console.error(`Failed to update villa ${id}:`, error);

@@ -115,7 +115,7 @@ const VillaDetail = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-12 py-12 border-t border-cream dark:border-white/5">
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-medium">Yearly Rate</span>
-                  <span className="text-xl font-bold text-charcoal dark:text-white">Rp {villa.price_per_year?.toLocaleString('id-ID')}</span>
+                  <span className="text-xl font-bold text-charcoal dark:text-white">Rp {villa.price_per_year ? Number(villa.price_per_year).toLocaleString('id-ID') : '0'}</span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-gray-medium">Capacity</span>

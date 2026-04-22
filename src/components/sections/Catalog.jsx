@@ -84,7 +84,7 @@ const Catalog = () => {
                 {/* Top Labels */}
                 <div className="absolute top-6 right-6 flex flex-col gap-2 items-end z-10">
                   <div className="bg-white/90 dark:bg-charcoal/90 backdrop-blur-md px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-charcoal dark:text-white shadow-xl transform group-hover:-translate-x-2 transition-transform duration-700">
-                    Rp {typeof item?.price_per_year === 'number' ? item.price_per_year.toLocaleString() : (item?.price_per_year || '4.5M')} / Yr
+                    Rp {item?.price_per_year ? Number(item.price_per_year).toLocaleString('id-ID') : '4.5M'} / Yr
                   </div>
                   
                   <div className={`px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] backdrop-blur-md flex items-center gap-2 transform group-hover:-translate-x-4 transition-transform duration-700 delay-75 shadow-xl ${

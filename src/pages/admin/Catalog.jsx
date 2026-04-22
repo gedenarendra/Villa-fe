@@ -9,7 +9,8 @@ import {
   Users as UsersIcon,
   DollarSign,
   MapPin,
-  Trash2
+  Trash2,
+  Edit2
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,6 +23,7 @@ const Catalog = () => {
     isModalOpen,
     isSubmitting,
     formData,
+    editId,
     openModal,
     closeModal,
     handleChange,
@@ -33,7 +35,7 @@ const Catalog = () => {
     if (result && result.success) {
       MySwal.fire({
         title: 'Success!',
-        text: 'New villa has been added to catalog.',
+        text: editId ? 'Villa has been successfully updated.' : 'New villa has been added to catalog.',
         icon: 'success',
         timer: 2000,
         showConfirmButton: false,
@@ -120,22 +122,26 @@ const Catalog = () => {
           <p className="text-sm text-charcoal/40 dark:text-white/40 font-medium italic">Manage your rental listings and availability status.</p>
         </div>
         <button 
-          onClick={openModal}
+          onClick={() => openModal()} // Perubahan: pastikan dipanggil tanpa argumen event
           className="bg-charcoal dark:bg-bronze text-white px-8 py-4 rounded-2xl text-[10px] font-black tracking-[0.2em] uppercase hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-xl shadow-charcoal/20"
         >
           <Plus size={16} /> Add New Villa
         </button>
       </div>
 
-      {/* Add Villa Modal */}
+      {/* Add / Edit Villa Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white dark:bg-[#151515] w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
             {/* Modal Header */}
             <div className="p-8 border-b border-charcoal/5 dark:border-white/5 flex justify-between items-center bg-[#F9F9F8] dark:bg-charcoal/20">
               <div>
-                <h3 className="text-xl font-black text-charcoal dark:text-white uppercase tracking-tight">New Villa Catalog</h3>
-                <p className="text-[10px] font-bold text-charcoal/40 dark:text-white/40 uppercase tracking-widest mt-1">Fill in the property details</p>
+                <h3 className="text-xl font-black text-charcoal dark:text-white uppercase tracking-tight">
+                  {editId ? 'Edit Villa Catalog' : 'New Villa Catalog'}
+                </h3>
+                <p className="text-[10px] font-bold text-charcoal/40 dark:text-white/40 uppercase tracking-widest mt-1">
+                  {editId ? 'Update the property details' : 'Fill in the property details'}
+                </p>
               </div>
               <button 
                 onClick={closeModal}
@@ -185,7 +191,7 @@ const Catalog = () => {
                   <div className="relative">
                     <DollarSign size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-charcoal/20 dark:text-white/20" />
                     <input 
-                      type="number" 
+                      type="text" 
                       name="price_per_year"
                       required
                       value={formData.price_per_year}
@@ -282,7 +288,7 @@ const Catalog = () => {
                     <Loader2 size={16} className="animate-spin" /> Processing...
                   </>
                 ) : (
-                  'Create Villa Catalog'
+                  editId ? 'Update Villa' : 'Create Villa Catalog'
                 )}
               </button>
             </div>
@@ -328,7 +334,7 @@ const Catalog = () => {
                       </td>
                       <td className="px-10 py-8 text-sm text-charcoal/60 dark:text-white/60 font-bold">{villa?.location || 'N/A'}</td>
                       <td className="px-10 py-8 text-sm text-charcoal dark:text-white font-black">
-                        Rp {typeof villa?.price_per_year === 'number' ? villa.price_per_year.toLocaleString() : (villa?.price_per_year || villa?.price || '0')} / Yr
+                        Rp {villa?.price_per_year ? Number(villa.price_per_year).toLocaleString('id-ID') : '0'} / Yr
                       </td>
                       <td className="px-10 py-8">
                         <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest ${
@@ -346,8 +352,12 @@ const Catalog = () => {
                         >
                           <Trash2 size={18} />
                         </button>
-                        <button className="p-3 rounded-xl text-charcoal/20 hover:text-charcoal hover:bg-charcoal/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-                          <MoreVertical size={18} />
+                        {/* Tombol Edit Baru */}
+                        <button 
+                          onClick={() => openModal(villa)} 
+                          className="p-3 rounded-xl text-blue-400/60 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
+                        >
+                          <Edit2 size={18} />
                         </button>
                       </td>
                     </tr>
