@@ -40,9 +40,19 @@ const Catalog = () => {
         background: '#fff'
       });
     } else if (result && !result.success) {
+      const errorData = result.error?.data;
+      let errorMessage = 'Failed to save property.';
+      
+      if (errorData?.errors) {
+        // Menggabungkan semua pesan error validasi dari Laravel
+        errorMessage = Object.values(errorData.errors).flat().join('\n');
+      } else if (errorData?.message) {
+        errorMessage = errorData.message;
+      }
+
       MySwal.fire({
         title: 'Error!',
-        text: result.error?.response?.data?.message || 'Failed to save property.',
+        text: errorMessage,
         icon: 'error',
         confirmButtonColor: '#C5A358'
       });
@@ -164,7 +174,8 @@ const Catalog = () => {
                     className="w-full bg-[#F9F9F8] dark:bg-white/5 border-none px-6 py-4 rounded-2xl text-sm font-bold text-charcoal dark:text-white focus:ring-2 focus:ring-bronze/20 transition-all outline-none appearance-none"
                   >
                     <option value="available">Available</option>
-                    <option value="not available">Not Available</option>
+                    <option value="partially_booked">Partially Booked</option>
+                    <option value="fullbooked">Fully Booked</option>
                   </select>
                 </div>
 

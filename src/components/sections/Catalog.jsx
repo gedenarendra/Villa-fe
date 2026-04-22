@@ -1,8 +1,28 @@
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useVillas } from '../../hooks/useVillas';
 
 const Catalog = () => {
   const { villas: properties, loading, error } = useVillas();
+  const scrollRef = useRef(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+      setScrollProgress(progress);
+    }
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const { clientWidth } = scrollRef.current;
+      const scrollAmount = direction === 'left' ? -clientWidth * 0.8 : clientWidth * 0.8;
+      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   if (error) {
     return (
@@ -23,19 +43,24 @@ const Catalog = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+      <div className="relative group/catalog">
+        <div 
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory gap-8 lg:gap-12 pb-12 -mx-6 px-6 lg:-mx-12 lg:px-12 scroll-smooth"
+        >
         {loading ? (
           // Skeleton Loading
-          [1, 2, 3].map((n) => (
-            <div key={n} className="animate-pulse">
-              <div className="aspect-[3/4] bg-cream dark:bg-white/5 mb-6"></div>
+          [1, 2, 3, 4].map((n) => (
+            <div key={n} className="flex-none w-[80vw] md:w-[calc(33.333%-2rem)] snap-start animate-pulse">
+              <div className="aspect-[3/4] bg-cream dark:bg-white/5 mb-6 rounded-3xl"></div>
               <div className="h-6 bg-cream dark:bg-white/5 w-3/4 mb-2"></div>
               <div className="h-4 bg-cream dark:bg-white/5 w-1/4"></div>
             </div>
           ))
         ) : (
           properties && properties.length > 0 ? properties.map((item) => (
-            <Link to={`/villas/${item.id}`} key={item?.id || Math.random()} className="group cursor-pointer block">
+            <Link to={`/villas/${item.id}`} key={item?.id || Math.random()} className="group cursor-pointer block flex-none w-[80vw] md:w-[calc(33.333%-2rem)] snap-start">
               <div className="aspect-[3/4] overflow-hidden mb-8 relative rounded-3xl shadow-sm group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-700 bg-cream dark:bg-white/5">
                 {/* Image with zoom effect */}
                 <img 
@@ -92,12 +117,47 @@ const Catalog = () => {
               </div>
             </Link>
           )) : (
-            <div className="col-span-3 text-center py-10 text-charcoal/20 dark:text-white/20 text-xs uppercase tracking-widest font-bold">
+            <div className="flex-none w-full text-center py-20 text-charcoal/20 dark:text-white/20 text-xs uppercase tracking-widest font-bold">
               No villas available at the moment
             </div>
           )
         )}
+        </div>
+
+        {/* Floating Navigation Arrows */}
+        {properties && properties.length > 3 && (
+          <>
+            <button 
+              onClick={() => scroll('left')}
+              className="absolute -left-4 lg:-left-8 top-[40%] -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 dark:bg-charcoal/90 backdrop-blur-md shadow-2xl flex items-center justify-center text-charcoal dark:text-white opacity-0 group-hover/catalog:opacity-100 transition-all duration-500 hidden lg:flex border border-charcoal/5 dark:border-white/5 hover:bg-bronze hover:text-white active:scale-90"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={() => scroll('right')}
+              className="absolute -right-4 lg:-right-8 top-[40%] -translate-y-1/2 z-20 w-16 h-16 rounded-full bg-white/90 dark:bg-charcoal/90 backdrop-blur-md shadow-2xl flex items-center justify-center text-charcoal dark:text-white opacity-0 group-hover/catalog:opacity-100 transition-all duration-500 hidden lg:flex border border-charcoal/5 dark:border-white/5 hover:bg-bronze hover:text-white active:scale-90"
+              aria-label="Scroll right"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </>
+        )}
       </div>
+
+      {properties && properties.length > 3 && (
+        <div className="mt-4 flex flex-col items-center lg:items-start gap-6">
+          <div className="h-[2px] w-full max-w-[200px] bg-charcoal/5 dark:bg-white/5 relative overflow-hidden rounded-full">
+            <div 
+              className="absolute inset-y-0 left-0 bg-bronze transition-all duration-300 rounded-full"
+              style={{ width: `${Math.max(5, scrollProgress)}%` }}
+            />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-medium/60 dark:text-white/30 flex items-center gap-3">
+            Swipe to explore <span className="w-8 h-[1px] bg-charcoal/10 dark:bg-white/10"></span>
+          </p>
+        </div>
+      )}
     </section>
   );
 };

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 dan IE 11 */
+    user-select: none; /* Sintaks standar */
+}
+
 @layer base {
   @font-face {
     font-family: 'Satoshi';
@@ -42,5 +48,14 @@
   
   .link-underlined {
     @apply inline-flex items-center gap-3 text-xs font-bold tracking-widest-plus uppercase border-b border-charcoal/10 pb-1 hover:border-charcoal transition-all duration-300;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
