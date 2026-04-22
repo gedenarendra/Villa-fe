@@ -6,12 +6,16 @@ import {
   Settings, 
   LogOut, 
   Search,
-  Bell
+  Bell,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 import { navigationService } from '../../services/navigationService';
+import { useTheme } from '../../hooks/useTheme';
 
 const AdminLayout = ({ children }) => {
+  const { theme, toggleTheme } = useTheme();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,10 +82,14 @@ const AdminLayout = ({ children }) => {
           </div>
           
           <div className="flex items-center gap-6">
-            {/* <button className="relative p-2 text-charcoal/40 hover:text-charcoal dark:text-white/40 dark:hover:text-white transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-bronze rounded-full border-2 border-white dark:border-charcoal"></span>
-            </button> */}
+            <button 
+              onClick={toggleTheme}
+              className="p-3 rounded-2xl bg-[#F9F9F8] dark:bg-white/5 text-charcoal/40 dark:text-white/40 hover:text-bronze dark:hover:text-bronze transition-all duration-300"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            
             <div className="flex items-center gap-4 pl-6 border-l border-charcoal/5 dark:border-white/5">
               <div className="text-right">
                 <p className="text-xs font-bold text-charcoal dark:text-white tracking-wide">Admin User</p>

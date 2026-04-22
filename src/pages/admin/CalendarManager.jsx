@@ -1,5 +1,5 @@
 import { useCalendar } from '../../hooks/useCalendar';
-import { Calendar as CalendarIcon, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, CheckCircle, AlertCircle, Edit2, Trash2, X } from 'lucide-react';
 
 const CalendarManager = () => {
   const {
@@ -16,7 +16,11 @@ const CalendarManager = () => {
     setEndYear,
     note,
     setNote,
-    handleBlock
+    handleBlock,
+    handleEdit,
+    handleDelete,
+    isEditing,
+    resetForm
   } = useCalendar();
 
   if (loading) return (
@@ -37,11 +41,22 @@ const CalendarManager = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Block Form */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-charcoal-light p-8 rounded-[2.5rem] border border-charcoal/5 dark:border-white/5 shadow-sm">
-            <h3 className="text-sm font-black uppercase tracking-widest text-charcoal dark:text-white mb-8 flex items-center gap-3">
-              <CalendarIcon className="w-4 h-4 text-bronze" />
-              Block Year Range
-            </h3>
+          <div className="bg-white dark:bg-charcoal-light p-8 rounded-[2.5rem] border border-charcoal/5 dark:border-white/5 shadow-sm sticky top-8">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-sm font-black uppercase tracking-widest text-charcoal dark:text-white flex items-center gap-3">
+                <CalendarIcon className="w-4 h-4 text-bronze" />
+                {isEditing ? 'Edit Block Range' : 'Block Year Range'}
+              </h3>
+              {isEditing && (
+                <button 
+                  onClick={resetForm}
+                  className="p-2 hover:bg-red-50 text-red-500 rounded-full transition-colors"
+                  title="Cancel Edit"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
 
             <form onSubmit={handleBlock} className="space-y-6">
               <div className="space-y-2">
@@ -50,7 +65,8 @@ const CalendarManager = () => {
                   value={selectedVilla}
                   onChange={(e) => setSelectedVilla(e.target.value)}
                   required
-                  className="w-full bg-[#F9F9F8] dark:bg-white/5 border-none px-6 py-4 rounded-2xl text-sm font-bold text-charcoal dark:text-white focus:ring-2 focus:ring-bronze/20 transition-all outline-none"
+                  disabled={isEditing} // Cannot change villa when editing
+                  className="w-full bg-[#F9F9F8] dark:bg-white/5 border-none px-6 py-4 rounded-2xl text-sm font-bold text-charcoal dark:text-white focus:ring-2 focus:ring-bronze/20 transition-all outline-none disabled:opacity-50"
                 >
                   <option value="">Choose a villa...</option>
                   {villas.map(v => (
@@ -64,18 +80,15 @@ const CalendarManager = () => {
                   <label className="text-[10px] font-black uppercase tracking-widest text-charcoal/40 ml-1">Start Year</label>
                   <select 
                     value={startYear}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
-                      setStartYear(val);
-                      if (endYear < val) setEndYear(val);
-                    }}
+                    onChange={(e) => setStartYear(parseInt(e.target.value))}
                     required
                     className="w-full bg-[#F9F9F8] dark:bg-white/5 border-none px-4 py-4 rounded-2xl text-sm font-bold text-charcoal dark:text-white focus:ring-2 focus:ring-bronze/20 transition-all outline-none"
                   >
-                    {[0,1,2,3,4,5].map(offset => {
-                      const year = new Date().getFullYear() + offset;
+                    {[...Array(11).keys()].map(offset => {
+                      const year = (isEditing ? Math.min(startYear, new Date().getFullYear()) : new Date().getFullYear()) + offset - (isEditing ? 2 : 0);
+                      if (year < 2020) return null; // Reasonable floor
                       return <option key={year} value={year}>{year}</option>
-                    })}
+                    }).filter(Boolean)}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -114,13 +127,26 @@ const CalendarManager = () => {
                 </div>
               )}
 
-              <button 
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-charcoal dark:bg-bronze text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-              >
-                {submitting ? <Loader2 className="animate-spin" size={16} /> : 'Save Block Range'}
-              </button>
+              <div className="flex gap-3">
+                {isEditing && (
+                  <button 
+                    type="button"
+                    onClick={resetForm}
+                    className="flex-1 bg-charcoal/5 dark:bg-white/5 text-charcoal dark:text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-charcoal/10 transition-all"
+                  >
+                    Cancel
+                  </button>
+                )}
+                <button 
+                  type="submit"
+                  disabled={submitting}
+                  className={`flex-[2] py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 ${
+                    isEditing ? 'bg-bronze text-white' : 'bg-charcoal dark:bg-bronze text-white'
+                  }`}
+                >
+                  {submitting ? <Loader2 className="animate-spin" size={16} /> : (isEditing ? 'Update Range' : 'Save Block Range')}
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -137,8 +163,8 @@ const CalendarManager = () => {
                   <tr className="border-b border-charcoal/5 dark:border-white/5">
                     <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30">Villa Name</th>
                     <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30">Lease Range</th>
-                    <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30">Duration</th>
-                    <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30">Status</th>
+                    <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30 text-center">Duration</th>
+                    <th className="px-8 py-6 text-[9px] font-black uppercase tracking-widest text-charcoal/30 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-charcoal/5 dark:divide-white/5">
@@ -154,19 +180,33 @@ const CalendarManager = () => {
                         <tr key={booking.id} className="hover:bg-cream/20 dark:hover:bg-white/5 transition-colors">
                           <td className="px-8 py-6">
                             <p className="text-sm font-black text-charcoal dark:text-white">{booking.villa?.name || 'Unknown Villa'}</p>
+                            {booking.note && <p className="text-[10px] text-charcoal/40 dark:text-white/40 font-medium">{booking.note}</p>}
                           </td>
                           <td className="px-8 py-6">
                             <p className="text-xs font-bold text-charcoal/60 dark:text-white/60">
                               {sYear === eYear ? `Year ${sYear}` : `${sYear} - ${eYear}`}
                             </p>
                           </td>
-                          <td className="px-8 py-6">
-                            <p className="text-xs font-bold text-charcoal dark:text-white">{eYear - sYear + 1} Years</p>
+                          <td className="px-8 py-6 text-center">
+                            <p className="text-xs font-bold text-charcoal dark:text-white">{eYear - sYear + 1} Yrs</p>
                           </td>
-                          <td className="px-8 py-6">
-                            <span className="px-3 py-1.5 rounded-lg bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400 text-[8px] font-black uppercase tracking-widest">
-                              Occupied
-                            </span>
+                          <td className="px-8 py-6 text-right">
+                            <div className="flex justify-end gap-2">
+                              <button 
+                                onClick={() => handleEdit(booking)}
+                                className="p-2.5 rounded-xl bg-bronze/10 text-bronze hover:bg-bronze hover:text-white transition-all"
+                                title="Edit"
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                              <button 
+                                onClick={() => handleDelete(booking.id)}
+                                className="p-2.5 rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                                title="Delete"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );

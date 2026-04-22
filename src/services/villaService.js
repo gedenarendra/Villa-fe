@@ -95,6 +95,28 @@ export const villaService = {
             throw error;
         }
     },
+
+    // Admin: Update booking (Block year range)
+    updateBooking: async (id, bookingData) => {
+        try {
+            const response = await api.put(`/bookings/${id}`, bookingData);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to update booking ${id}:`, error);
+            throw error;
+        }
+    },
+
+    // Admin: Delete booking
+    deleteBooking: async (id) => {
+        try {
+            const response = await api.delete(`/bookings/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Failed to delete booking ${id}:`, error);
+            throw error;
+        }
+    },
     
     // Admin: Hard Reset Data
     hardReset: async () => {

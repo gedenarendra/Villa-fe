@@ -17,6 +17,10 @@ export const useCalendar = () => {
     const [startYear, setStartYear] = useState(new Date().getFullYear());
     const [endYear, setEndYear] = useState(new Date().getFullYear());
     const [note, setNote] = useState('');
+    
+    // Edit state
+    const [isEditing, setIsEditing] = useState(false);
+    const [editId, setEditId] = useState(null);
 
     const fetchData = useCallback(async () => {
         try {
@@ -39,6 +43,44 @@ export const useCalendar = () => {
         fetchData();
     }, [fetchData]);
 
+    const resetForm = () => {
+        setSelectedVilla('');
+        setStartYear(new Date().getFullYear());
+        setEndYear(new Date().getFullYear());
+        setNote('');
+        setIsEditing(false);
+        setEditId(null);
+    };
+
+    const handleEdit = (booking) => {
+        setIsEditing(true);
+        setEditId(booking.id);
+        setSelectedVilla(booking.villa_id);
+        setStartYear(new Date(booking.start_date).getFullYear());
+        setEndYear(new Date(booking.end_date).getFullYear());
+        setNote(booking.note || '');
+        // Scroll to form or just let user see it
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Apakah Anda yakin ingin menghapus blokir kalender ini?')) return;
+
+        try {
+            setSubmitting(true);
+            await villaService.deleteBooking(id);
+            setMessage({ type: 'success', text: 'Blokir kalender berhasil dihapus!' });
+            await fetchData();
+        } catch (err) {
+            setMessage({ 
+                type: 'error', 
+                text: err.response?.data?.message || 'Gagal menghapus blokir.' 
+            });
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const handleBlock = async (e) => {
         if (e) e.preventDefault();
         if (!selectedVilla || !startYear || !endYear) return;
@@ -47,21 +89,28 @@ export const useCalendar = () => {
             setSubmitting(true);
             setMessage(null);
             
-            await villaService.blockDates({
+            const payload = {
                 villa_id: selectedVilla,
                 start_year: startYear,
                 end_year: endYear,
                 note: note
-            });
+            };
+
+            if (isEditing) {
+                await villaService.updateBooking(editId, payload);
+                setMessage({ type: 'success', text: 'Rentang tahun berhasil diperbarui!' });
+            } else {
+                await villaService.blockDates(payload);
+                setMessage({ type: 'success', text: 'Rentang tahun berhasil diblokir!' });
+            }
             
-            setMessage({ type: 'success', text: 'Rentang tahun berhasil diblokir!' });
-            setNote('');
+            resetForm();
             await fetchData(); // Refresh list
             return true;
         } catch (err) {
             setMessage({ 
                 type: 'error', 
-                text: err.response?.data?.message || 'Gagal memblokir rentang tahun.' 
+                text: err.response?.data?.message || 'Gagal menyimpan perubahan.' 
             });
             return false;
         } finally {
@@ -89,6 +138,10 @@ export const useCalendar = () => {
         note,
         setNote,
         handleBlock,
+        handleEdit,
+        handleDelete,
+        isEditing,
+        resetForm,
         refresh: fetchData
     };
 };
